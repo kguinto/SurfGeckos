@@ -21,4 +21,120 @@
     </button>
   {% endbuttons %}
 </form>
+
+{# Plain HTML form block. Wire up as needed. #}
+<h3>Non-functional form:</h3>
+  <form id="eal-form">
+    <div class="col-lg-9 col-lg-offset-0 col-md-12">
+      <div class="row">
+        <div class="col-lg-10 col-lg-offset-1 col-md-12">
+          <h2>Site Scenario</h2>
+          <div class="row">
+            <div class="col-md-12">
+              <label>Land use:</label><br>
+              <div class="radio-inline">
+                <label><input type="radio" name='landuse' value='unrestricted'>Unrestricted</label> &nbsp; &nbsp; &nbsp;&nbsp;
+                <label><input type="radio" name='landuse' value='commercial-industrial-only'>Commercial/Industrial only</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label>Groundwater utility</label><br>
+              <div class="radio-inline">
+                <label><input type="radio" name='groundwater-utility' value='drinking-water-resource'>Drinking water</label> &nbsp; &nbsp; &nbsp;&nbsp;
+                <label><input type="radio" name='groundwater-utility' value='non-drinking-water-resource'>Non-drinking water</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label>Distance to nearest surface water body</label><br>
+              <div class="radio-inline">
+                <label><input type="radio" name='distance-to-surface-water' value='less-than-150m'> less than 150m </label> &nbsp; &nbsp; &nbsp;&nbsp;
+                <label><input type="radio" name='distance-to-surface-water' value='greater-than-150m'> greater than 150m </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-10 col-lg-offset-1 col-md-12">
+          <h2>Contaminants </h2>
+          <p>...</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-10 col-lg-offset-1 col-md-12">
+          <h2>Site Data (optional)</h2>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Soil: </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Groundwater: </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Soil vapor</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-12">
+                  <input type="text" name='soil'/> mg/kg
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <input type="text" name='groundwater'/> ug/L
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <input type="text" name='soil-vapor'/> ug/m3
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">Submit Data!</button>
+    </div>
+  </form>
+{% comment %}
+
+  JS functionality to be added somewhere else:
+
+  function processForm(e) {
+  if (e.preventDefault) e.preventDefault();
+
+  /* do what you want with the form */
+  console.log('pressed');
+
+
+  console.log(
+  $('#eal-form').serializeArray() );
+
+  // You must return false to prevent the default form behavior
+  return false;
+  }
+
+  var form = document.getElementById('eal-form');
+  if (form.attachEvent) {
+  form.attachEvent("submit", processForm);
+  } else {
+  form.addEventListener("submit", processForm);
+  }
+
+{% endcomment %}
+
+
+
 {% endblock %}
