@@ -202,25 +202,29 @@ class SurferReport:
 
 if __name__ == '__main__':
 	input_data = {
-		"Site Scenario":{
-			"Land Use":"Unrestricted",
-			"Groundwater Utility":"Drinking Water Resource",
-			"Distance To Nearest Surface Water Body":"< 150m",
+		"site_scenario":{
+			"land_use":"Unrestricted",
+			"groundwater_use":"Drinking Water Resource",
+			"sw_distance":"not_close",
+			"name":"My house",
+			"address":"123 Happy Place",
+			"site_id":"553423",
+			"timestamp":0
 		},
-		"Contaminant":{
-			"Chemical Name or CAS\#":"Chemical Name",
-			"Contaminant":"ACENAPHTHENE",
-		},
-		"Site Data":{
-			"Soil (mg/kg)":10,
-			"Groundwater (ug/L)":10,
-			"Soil Vapor (ug/m^3":10,
-		},
-		"Site Information":{
-			"Site Name":"My house",
-			"Site Address":"123 Happy Place",
-			"Site ID Number":"553423",
-		}
+		"contaminants":
+		[
+			{
+				"Chemical Name or CAS\#":"Chemical Name",
+				"Contaminant":"ACENAPHTHENE",
+				"Site Data":
+				{
+					"Soil (mg/kg)":10,
+					"Groundwater (ug/L)":10,
+					"Soil Vapor (ug/m^3":10,
+				}
+			}
+		],
 	}
+	
 	report = SurferReport(input_data)
 	print(report.record)
