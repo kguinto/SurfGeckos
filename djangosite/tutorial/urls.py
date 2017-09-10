@@ -20,9 +20,10 @@ from snippets.views import ContaminantViewSet, SiteQueryViewSet
 
 router = DefaultRouter()
 router.register(r'^contaminants', ContaminantViewSet, base_name="contaminant")
-router.register(r'^sitequerys', SiteQueryViewSet, base_name="sitequery")
+router.register(r'^sitequeries', SiteQueryViewSet, base_name="sitequery")
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^snippets/',include('snippets.urls')),
     url(r'^api/', include(router.urls))
 ]

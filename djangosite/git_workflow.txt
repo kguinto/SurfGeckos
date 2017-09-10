@@ -1,0 +1,16 @@
+
+git pull ?upstream
+get checkout -b <branchname> # what kind of branch
+<loop as needed
+git commit # code,  add to branch
+git checkout master # switch to master
+git pull ?upstream
+git checkout branchname # back to branch
+git merge master  # merge from master
+# resolve 
+<endloop>
+git checkout master
+git merge <branchname> # merge to master
+git push ?upstream
+
+#push

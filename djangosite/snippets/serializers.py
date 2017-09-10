@@ -6,7 +6,7 @@ class ContaminantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contaminant
         fields = [
-            'id', 'name', 'direct_exposure', 'x',
+            'id', 'name', 'direct_exposure', 
         ]
         
 class SiteQuerySerializer(serializers.ModelSerializer):
