@@ -1,0 +1,9 @@
+{% extends 'snippets/base.html' %}
+{% load bootstrap3 %}
+
+{% block title %}Surf Geckos{% endblock %}
+
+{% block content %}
+Welcome to the Surf Geckos Environmental Action Level report application.
+<a href="{% url 'create_sitequery' %}">Create a site query</a>
+{% endblock %}
