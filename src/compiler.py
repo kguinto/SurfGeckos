@@ -1,35 +1,47 @@
-# Unfinished. Doesn't do anything yet.
-# Haven't even tested. Just want to show you where my mind is.
+"""
+# From command line:
+python compiler.py
+
+# This will show sample output from sample data
+
+# From within program
+
+# define input_data as in the following example. It reprents user_input as in sheet 2.
+
+	input_data = {
+		"site_scenario":{
+			"land_use":"Unrestricted",
+			"groundwater_use":"Drinking Water Resource",
+			"sw_distance":"not_close", #close
+			"name":"My house",
+			"address":"123 Happy Place",
+			"site_id":"553423",
+			"timestamp":0
+		},
+		"contaminants":
+		[
+			{
+				"choice":"Chemical Name",
+				"contaminant":"ACENAPHTHENE",
+				"concentrations":
+				{
+					"soil":10,
+					"groundwater":10,
+					"soil_vapor":10,
+				}
+			}
+		],
+	}
+
+from compiler import SurferReport
+report = SurferReport(input_data)
+report.record
+
+# report.record will be a dictionary with the data found in spreadsheet 4
+
+"""
 
 help_ = """
-Expecting json, e.g.
-input_data = 
-{
-"Site Scenario":{"Land Use":__, "Groundwater Utility":__, "Distance To Nearest Surface Water Body":__,},
-"Contaminant":{"Chemical Name or CAS#":__, "Contaminant":__},
-{"Site Data":{"Soil (mg/kg)":__, "Groundwater (ug/L)":__, "Soil Vapor (ug/m^3":__}},
-"Site Information":{"Site Name":__, "Site Address":__, "Site ID Number":__}
-}	input_data = {
-		"Site Scenario":{
-			"Land Use":"Unrestricted",
-			"Groundwater Utility":"Drinking Water Resource",
-			"Distance To Nearest Surface Water Body":"< 150m",
-		},
-		"Contaminant":{
-			"Chemical Name or CAS\#":"Chemical Name",
-			"Contaminant":"ACENAPHTHENE",
-		},
-		"Site Data":{
-			"Soil (mg/kg)":10,
-			"Groundwater (ug/L)":10,
-			"Soil Vapor (ug/m^3":10,
-		},
-		"Site Information":{
-			"Site Name":"My house",
-			"Site Address":"123 Happy Place",
-			"Site ID Number":"553423",
-		}
-	}
 
 We will work with mongodb by default.
 
@@ -61,57 +73,74 @@ class SurferReport:
 		Produces a record such as:
 
 		{
-		"Site Information":{"Site Name":__, "Site Address":__, "Site ID Number":__},
-		"Site Scenario":{"Land Use":__, "Groundwater Utility":__, "Distance To Nearest Surface Water Body":__},
+		"site_scenario":{"Site Name":__, "Site Address":__, "Site ID Number":__},
+		"Site Scenario":{"land_use":__, "groundwater_use":__, "sw_distance":__},
 		"Chemical of Concern":__,
 		"Soil Environmental Hazards": __
 		}
 		"""
-		record = {}
-		#
-		record["Site Information"] = input_data["Site Information"]
-		#
-		record["Site Scenario"] = input_data["Site Scenario"]
-		#
-		record["Chemical of Concern"] = self._chemical_of_concern(input_data)
-		#
-		record["Input Site Concentrations"] = {}
 		concentration_keys = [
-			"Soil (mg/kg)",
-			"Groundwater (ug/L)",
-			"Soil Vapor (ug/m^3"
+			"soil",
+			"groundwater",
+			"soil_vapor"
 		]
-		for key in concentration_keys:
-			record["Input Site Concentrations"][key] = self._concentration(key, input_data)
-
-		#
 		soil_contamination_unit = "mg/kg"
 		soil_keys = [
-			"Direct Exposure",
-			"Vapor Emissions to Indoor Air",
-			"Terrestrial Ecotoxicity",
-			"Gross Contamination",
-			"Leaching (threat to groundwater)"
+			"direct_exposure",
+			"vapor_emissions",
+			"ecotoxicity",
+			"gross_contamination",
+			"leaching"
 		]
 		other_soil_keys = [
-			"Background",
-			"Final Soil Tier 1 EAL"
+			"background",
+			"eal"
 		]
-		basis = "Basis"
-		record["Soil Environmental Hazards"] = {}
-		for key in soil_keys + other_soil_keys:
-			record["Soil Environmental Hazards"][key] = {}
-			record["Soil Environmental Hazards"][key]["Units"] = soil_contamination_unit
-
-		for key in soil_keys + other_soil_keys:
-			
-			record["Soil Environmental Hazards"][key]["Tier 1 Action Level"] = self._tier_1_action_level(key, input_data)
-		for key in soil_keys:
-			record["Soil Environmental Hazards"][key]["Potential Hazard?"] = self._potential_hazard(key, input_data, record["Soil Environmental Hazards"][key]["Tier 1 Action Level"])
-			record["Soil Environmental Hazards"][key]["Referenced Table"] = self._referenced_table(key, input_data)
-			
-		record["Soil Environmental Hazards"][basis] = self._basis(input_data)
+		basis = "basis"
+		record = {}
+		#
+		record["site_scenario"] = input_data["site_scenario"]
+		#
+		record["site_scenario"] = input_data["site_scenario"]
+		#
+		record["contaminants"] = []
 		
+		#
+		
+		for chemical_data in input_data["contaminants"]:
+			# Example of chemical_data
+			# {
+			# 	"choice":"Chemical Name",
+			# 	"contaminant":"ACENAPHTHENE",
+			# 	"site_scenario":
+			# 	{
+			# 		"soil":10,
+			# 		"groundwater":10,
+			# 		"soil_vapor":10,
+			# 	}
+			# }
+			out_data = {}
+			out_data["concentrations"] = {}
+			out_data["contaminant"] = self._chemical_of_concern(chemical_data)
+			for key in concentration_keys:
+				out_data["concentrations"][key] = self._concentration(key, chemical_data)
+
+			#
+
+			out_data["soil_hazards"] = {}
+			for key in soil_keys + other_soil_keys:
+				out_data["soil_hazards"][key] = {}
+				out_data["soil_hazards"][key]["units"] = soil_contamination_unit
+
+			for key in soil_keys + other_soil_keys:
+			
+				out_data["soil_hazards"][key]["action_level"] = self._tier_1_action_level(key, input_data, chemical_data)
+			for key in soil_keys:
+				out_data["soil_hazards"][key]["potential_hazard"] = self._potential_hazard(key, chemical_data, out_data["soil_hazards"][key]["action_level"])
+				out_data["soil_hazards"][key]["table"] = self._referenced_table(key, input_data, chemical_data)
+			
+			out_data["soil_hazards"][basis] = self._basis(chemical_data)
+			record['contaminants'].append(out_data)
 		return record
 
 	def _chemical_of_concern(self, input_data):
@@ -121,9 +150,9 @@ class SurferReport:
 		References Spreadsheet 2, H3
 		if D14=N27, C16, (VLOOKUP (C16, N33:)186,2,0)
 		"""
-		if input_data["Contaminant"]["Chemical Name or CAS\#"]=="Chemical Name":
+		if input_data["choice"]=="Chemical Name":
 			
-			return input_data["Contaminant"]["Contaminant"]
+			return input_data["contaminant"]
 		else:
 			# TODO: Look up by CAS#
 			# Will need that table in a separate database
@@ -134,7 +163,7 @@ class SurferReport:
 		For soil, Spreadsheet 4, D19
 		IF('2. EAL Surfer - Tier 1 EALs'::Table 1::D22=0,"-",'2. EAL Surfer - Tier 1 EALs'::Table 1::D22)
 		"""
-		value = input_data["Site Data"][key]
+		value = input_data["concentrations"][key]
 		if not value:
 			# TODO: This is what currently exists.
 			# Perhaps better null value would be better
@@ -152,14 +181,14 @@ class SurferReport:
 		# TODO: This is just a placeholder
 		return "Background"
 
-	def _tier_1_action_level(self, key, input_data):
+	def _tier_1_action_level(self, key, input_data, chemical_data):
 		"""
 		PLACEHOLDER: Unfinished
 		compiler - C46
 
-		IF((IF(input_data["Land Use"] == 'Unrestricted',C43,C44))=0,"-",(IF('2. EAL Surfer - Tier 1 EALs'::Table 1::D5='2. EAL Surfer - Tier 1 EALs'::Table 1::O13,C43,C44)))
+		IF((IF(input_data["land_use"] == 'Unrestricted',C43,C44))=0,"-",(IF('2. EAL Surfer - Tier 1 EALs'::Table 1::D5='2. EAL Surfer - Tier 1 EALs'::Table 1::O13,C43,C44)))
 		"""
-		if input_data["Site Scenario"]["Land Use"]:
+		if input_data["site_scenario"]["land_use"]:
 			# compiler C43
 			result = 0
 			#IF(VLOOKUP('2. EAL Surfer - Tier 1 EALs'::Table 1::H3,'Table I-1 (Unrestricted SoilDE)'::Table 1::A6:H159,2)=0,"-",VLOOKUP('2. EAL Surfer - Tier 1 EALs'::Table 1::H3,'Table I-1 (Unrestricted SoilDE)'::Table 1::A6:H159,2))
@@ -171,14 +200,13 @@ class SurferReport:
 		if result == 0:
 			return '-'
 		return result
-			
-		return 0
+	
 	def _potential_hazard(self, key, input_data, tier_1_action_level):
 		"""
 		e.g. IF(F24="-","-",IF($D$19="-","-",(IF($D$19>F24,"Yes","No"))))
 		"""
 		try:
-			soil = input_data["Site Data"]["Soil (mg/kg)"]
+			soil = input_data["concentrations"]["soil"]
 			if  float(soil) > float(tier_1_action_level):
 				return "Yes"
 			else:
@@ -186,16 +214,16 @@ class SurferReport:
 		except ValueError:
 			return "-"
 
-	def _referenced_table(self, key, input_data):
+	def _referenced_table(self, key, input_data, chemical_data):
 		"""
 		
 		"""
 		reference_tables = {
-			"Direct Exposure":"Table I-1" if input_data["Site Scenario"]["Land Use"]=="Unrestricted" else "Table I-2",
-			"Vapor Emissions to Indoor Air":"Table C-1b",
-			"Leaching (threat to groundwater)":"Table E-1",
-			"Terrestrial Ecotoxicity":"Table L",
-			"Gross Contamination": "Table F-2",
+			"direct_exposure":"Table I-1" if input_data["site_scenario"]["land_use"]=="Unrestricted" else "Table I-2",
+			"vapor_emissions":"Table C-1b",
+			"leaching":"Table E-1",
+			"ecotoxicity":"Table L",
+			"gross_contamination": "Table F-2",
 		}
 		return reference_tables[key]
 
@@ -205,7 +233,7 @@ if __name__ == '__main__':
 		"site_scenario":{
 			"land_use":"Unrestricted",
 			"groundwater_use":"Drinking Water Resource",
-			"sw_distance":"not_close",
+			"sw_distance":"not_close", #close
 			"name":"My house",
 			"address":"123 Happy Place",
 			"site_id":"553423",
@@ -214,13 +242,13 @@ if __name__ == '__main__':
 		"contaminants":
 		[
 			{
-				"Chemical Name or CAS\#":"Chemical Name",
-				"Contaminant":"ACENAPHTHENE",
-				"Site Data":
+				"choice":"Chemical Name",
+				"contaminant":"ACENAPHTHENE",
+				"concentrations":
 				{
-					"Soil (mg/kg)":10,
-					"Groundwater (ug/L)":10,
-					"Soil Vapor (ug/m^3":10,
+					"soil":10,
+					"groundwater":10,
+					"soil_vapor":10,
 				}
 			}
 		],
