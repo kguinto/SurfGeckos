@@ -21,6 +21,9 @@ class Contaminant(models.Model):
     name = models.CharField(max_length=100, unique=True)
     direct_exposure = models.FloatField()
 
+    def __str__(self):
+        return str(self.name)
+
 class SiteQuery(models.Model):
     site_id = models.IntegerField()
     address = models.CharField(max_length=128)
@@ -30,28 +33,41 @@ class SiteQuery(models.Model):
     groundwater_use = models.CharField(max_length=24, choices=groundwater_use_types)
     sw_distance = models.CharField(max_length=24, choices=sw_distance_types)
 
-    __str__ = "Site query for " + str(address)
+    def __str__(self):
+        return "site query for " + str(self.address)
 
 class ActionLevel(models.Model):
     contaminant = models.ForeignKey(Contaminant, on_delete=models.CASCADE)
     land_use = models.CharField(max_length=24, choices=land_use_types)
     groundwater_use = models.CharField(max_length=24, choices=groundwater_use_types)
     sw_distance = models.CharField(max_length=24, choices=sw_distance_types)
-    direct_exposure = models.FloatField()
-    soil_vapor_emissions = models.FloatField()
-    terrestrial_ecotoxicity = models.FloatField()
-    soil_gross_contamination = models.FloatField()
-    leaching = models.FloatField()
-    dw_toxicity = models.FloatField()
-    gw_vapor_emissions = models.FloatField()
-    aquatic_ecotoxicity = models.FloatField()
-    gw_gross_contamination = models.FloatField()
-    shallow_soil_vapor = models.FloatField()
-    indoor_air = models.FloatField()
+    direct_exposure = models.FloatField(blank=True)
+    soil_vapor_emissions = models.FloatField(blank=True)
+    terrestrial_ecotoxicity = models.FloatField(blank=True)
+    soil_gross_contamination = models.FloatField(blank=True)
+    leaching = models.FloatField(blank=True)
+    dw_toxicity = models.FloatField(blank=True)
+    gw_vapor_emissions = models.FloatField(blank=True)
+    aquatic_ecotoxicity = models.FloatField(blank=True)
+    gw_gross_contamination = models.FloatField(blank=True)
+    shallow_soil_vapor = models.FloatField(blank=True)
+    indoor_air = models.FloatField(blank=True)
+
+    def __str__(self):
+        s = 'Action levels for ' 
+        s += str(self.contaminant)
+        s += ' for ' + str(self.land_use) + ' land use, '
+        s += str(self.groundwater_use) + ' groundwater use, and '
+        s += str(self.sw_distance) + ' from surface water'
+
+        return s
 
 class SiteContaminant(models.Model):
     sitequery = models.ForeignKey(SiteQuery, on_delete=models.CASCADE)
-    Contaminant = models.ForeignKey(Contaminant, on_delete=models.CASCADE)
-    soil = models.FloatField()
-    gw = models.FloatField()
-    soil_vapor = models.FloatField()
+    contaminant = models.ForeignKey(Contaminant, on_delete=models.CASCADE)
+    soil = models.FloatField(verbose_name='Soil (mg/kg)')
+    gw = models.FloatField(verbose_name='Groundwater (μg/L)')
+    soil_vapor = models.FloatField(verbose_name='Soil Vapor (μg/m³)')
+
+    def __str__(self):
+        return str(self.contaminant.name) + ' at ' + str(self.sitequery)
