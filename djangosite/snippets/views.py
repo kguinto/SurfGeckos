@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django.forms import modelform_factory
+from django.forms import modelform_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from rest_framework import views, viewsets
-from .models import Contaminant, SiteQuery
+from .models import Contaminant, SiteQuery, SiteContaminant
 from .serializers import ContaminantSerializer, SiteQuerySerializer
 
 # Create your views here.
@@ -31,7 +31,7 @@ def create_sitequery(request):
         form = SiteQueryForm(request.POST, request.FILES)
         if form.is_valid():
             sitequery = form.save()
-            return HttpResponseRedirect(reverse('snippets:sitequery', args=(sitequery.id)))
+            return HttpResponseRedirect(reverse('snippets:create_sitecontaminant', args=(sitequery.id,)))
         else:
             render(request, 'snippets/create_sitequery.html', {'form': form,
             'error_message': 'Something went wrong'})
@@ -39,3 +39,29 @@ def create_sitequery(request):
     else:
         form = SiteQueryForm()
     return render(request, 'snippets/create_sitequery.html', {'form': form})
+
+
+def sitecontaminant(request, sitecontaminant_id):
+    return HttpResponse("This will show a sitecontaminant for %s" % sitecontaminant_id)
+
+def create_sitecontaminant(request, sitequery_id):
+    fields = ['contaminant', 'soil', 'gw', 'soil_vapor']
+    SiteContaminantFormSet = modelformset_factory(SiteContaminant,
+        fields=fields,
+        extra=2,
+        )
+    if request.method == 'POST':
+        formset = SiteContaminantFormSet(request.POST, request.FILES)
+        if formset.is_valid():
+            contaminants = formset.save(commit=False)
+            for cont in contaminants:
+                cont.sitequery_id = sitequery_id
+                cont.save()
+            return HttpResponseRedirect(reverse('snippets:sitequery', args=(sitequery_id,)))
+        else:
+            render(request, 'snippets/create_sitecontaminant.html', {'formset': formset,
+            'error_message': 'Something went wrong'})
+
+    else:
+        formset = SiteContaminantFormSet(queryset=SiteContaminant.objects.none())
+    return render(request, 'snippets/create_sitecontaminant.html', {'formset': formset})

@@ -1,0 +1,23 @@
+{# Load the tag library #}
+{% extends 'snippets/base.html' %}
+
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+{# Display a formset #}
+
+{% block content %}
+{% bootstrap_formset_errors formset %}
+<form role="form" method="post">
+    {% csrf_token %}
+    {% bootstrap_formset formset layout='horizontal'%}
+    {% buttons submit='OK' reset="Reset" %}{% endbuttons %}
+</form>
+
+{% endblock %}
