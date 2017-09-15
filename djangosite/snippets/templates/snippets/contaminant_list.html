@@ -1,0 +1,11 @@
+{% extends "snippets/base.html" %}
+{% load verbose_names %}
+
+{% block content %}
+    <h2>Contaminants</h2>
+    <ul>
+        {% for contaminant in object_list %}
+            <li>{% get_verbose_field_name contaminant "name" %} - {{ contaminant.name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
