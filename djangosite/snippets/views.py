@@ -2,11 +2,15 @@ from django.shortcuts import render
 from django.forms import modelform_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.views.generic import ListView, DetailView
 from rest_framework import views, viewsets
 from .models import Contaminant, SiteQuery, SiteContaminant
 from .serializers import ContaminantSerializer, SiteQuerySerializer
 
 # Create your views here.
+class ContaminantList(ListView):
+    model = Contaminant
+
 class ContaminantViewSet(viewsets.ModelViewSet):
     model = Contaminant
 
@@ -19,11 +23,15 @@ class SiteQueryViewSet(viewsets.ModelViewSet):
     queryset = SiteQuery.objects.all()
     serializer_class = SiteQuerySerializer
 
+class SiteQueryDetail(DetailView):
+    model = SiteQuery
+    
 def index(request):
     return render(request, 'snippets/index.html')
 
 def sitequery(request, sitequery_id):
-    return HttpResponse("This will show a sitequery for %s" % sitequery_id)
+    query = SiteQuery()
+    return render(request, 'snippets/sitequery_detail.html', {'sitequery': query})
 
 def create_sitequery(request):
     SiteQueryForm = modelform_factory(SiteQuery, exclude=['timestamp'])

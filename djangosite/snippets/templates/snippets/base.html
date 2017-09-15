@@ -1,19 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+</head>
+
+<body
+    style="background-image: url('http://health.hawaii.gov/about/wp-content/themes/Hawaii-State-DOH-Larger-Rotating-Banner/epanel/images/bg-image-5.jpg'); background-attachment: fixed; background-size: cover; opacity: 1; background-position: 50% 50%; background-repeat: no-repeat;">
+
+
 {% extends 'snippets/bootstrap.html' %}
 
 {% load bootstrap3 %}
 
 {% block bootstrap3_content %}
-    <div class="container">
-        <h1>{% block title %}(Surf Geckos){% endblock %}</h1>
+<br>
+  <div class="container" style="background-color: white; min-height: 60em;">
 
-        <p>
-            <a href="{% url 'snippets:index' %}">home</a>
-            <a href="{% url 'snippets:create_sitequery' %}">Create a site query</a>
-        </p>
+    <header
+        style="background-image: url('http://health.hawaii.gov/about/wp-content/themes/Chameleon-State-Template-Larger-Rotating-Banner/images/design/header/background.jpg')">
+      <h1>
+        <img src="http://health.hawaii.gov/wp-content/uploads/2013/02/logos3.png"
+             style="height: 60px; width: auto;">
+        {% block title %}HEER Environmental Action Level Reporter{% endblock %}
+      </h1>
 
-        {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
 
-        {% block content %}(no content){% endblock %}
-    </div>
+      <nav class="navbar navbar-expand-lg navbar-dark"
+           style="outline: none; border-radius: 0;  background-image: linear-gradient(rgb(42, 163, 6) 1%, rgb(47, 89, 26) 100%);">
+
+        <a class="navbar-brand" href="{% url 'snippets:index' %}">
+          EAL Reporter
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'snippets:index' %}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'snippets:create_sitequery' %}">Create a site query</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
+
+    {% block content %}(no content){% endblock %}
+
+
+  </div>
 
 {% endblock %}
+
+</body>
+</html>
