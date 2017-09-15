@@ -7,8 +7,8 @@
         <h1>{% block title %}(Surf Geckos){% endblock %}</h1>
 
         <p>
-            <a href="{% url 'index' %}">home</a>
-            <a href="{% url 'create_sitequery' %}">Create a site query</a>
+            <a href="{% url 'snippets:index' %}">home</a>
+            <a href="{% url 'snippets:create_sitequery' %}">Create a site query</a>
         </p>
 
         {% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
