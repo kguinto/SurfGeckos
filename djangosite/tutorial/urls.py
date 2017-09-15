@@ -24,6 +24,7 @@ router.register(r'^sitequeries', SiteQueryViewSet, base_name="sitequery")
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^snippets/',include('snippets.urls', namespace='snippets')),
-    url(r'^api/', include(router.urls))
+    url(r'^snippets/', include('snippets.urls', namespace='snippets')),
+    url(r'^api/', include(router.urls)),
+    url(r'^', include('snippets.urls', namespace='snippets')),
 ]

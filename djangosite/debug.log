@@ -1,0 +1,40 @@
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+(0.000) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
+(0.001) SELECT "snippets_sitequery"."id", "snippets_sitequery"."site_id", "snippets_sitequery"."address", "snippets_sitequery"."name", "snippets_sitequery"."timestamp", "snippets_sitequery"."land_use", "snippets_sitequery"."groundwater_use", "snippets_sitequery"."sw_distance" FROM "snippets_sitequery" WHERE "snippets_sitequery"."id" = 1; args=(1,)
+Exception while resolving variable 'LANGUAGE_CODE' in template 'snippets/sitequery_detail.html'.
+Traceback (most recent call last):
+  File "C:\Users\pbarkley\Documents\djangodemo\env\lib\site-packages\django\template\base.py", line 884, in _resolve_lookup
+    current = current[bit]
+  File "C:\Users\pbarkley\Documents\djangodemo\env\lib\site-packages\django\template\context.py", line 87, in __getitem__
+    raise KeyError(key)
+KeyError: 'LANGUAGE_CODE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\pbarkley\Documents\djangodemo\env\lib\site-packages\django\template\base.py", line 890, in _resolve_lookup
+    if isinstance(current, BaseContext) and getattr(type(current), bit):
+AttributeError: type object 'RequestContext' has no attribute 'LANGUAGE_CODE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\pbarkley\Documents\djangodemo\env\lib\site-packages\django\template\base.py", line 898, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'LANGUAGE_CODE'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\pbarkley\Documents\djangodemo\env\lib\site-packages\django\template\base.py", line 905, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [LANGUAGE_CODE] in "[{'True': True, 'False': False, 'None': None}, {'csrf_token': <SimpleLazyObject: <function csrf.<locals>._get_val at 0x03BCFF18>>, 'request': <WSGIRequest: GET '/snippets/sitequery/1/'>, 'user': <SimpleLazyObject: <function AuthenticationMiddleware.process_request.<locals>.<lambda> at 0x03B7BF18>>, 'perms': <django.contrib.auth.context_processors.PermWrapper object at 0x03BF7DD0>, 'messages': <django.contrib.messages.storage.fallback.FallbackStorage object at 0x03A8E690>, 'DEFAULT_MESSAGE_LEVELS': {'DEBUG': 10, 'INFO': 20, 'SUCCESS': 25, 'WARNING': 30, 'ERROR': 40}}, {}, {'object': <SiteQuery: site query for 45-379 Mokulele Dr #36>, 'sitequery': <SiteQuery: site query for 45-379 Mokulele Dr #36>, 'view': <snippets.views.SiteQueryDetail object at 0x03A8E6B0>}]"
+"GET /snippets/sitequery/1/ HTTP/1.1" 200 2055
+(0.001) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None
+(0.000) SELECT "django_migrations"."app", "django_migrations"."name" FROM "django_migrations"; args=()
