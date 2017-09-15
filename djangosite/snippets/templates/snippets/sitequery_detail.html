@@ -4,6 +4,7 @@
 {% load bootstrap3 %}
 
 {% load verbose_names %}
+{% load getattribute %}
 
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
@@ -48,6 +49,7 @@
         </tbody>
     </table>
 </div>
+
 <div class="hero-unit">
     <table class="table table-condensed">
         <thead>
@@ -70,4 +72,19 @@
         </tbody>
     </table>
 </div>
+
+    {% for site_contaminant in object.sitecontaminant_set.all %}
+    <h2>EAL Results for {{ site_contaminant.contaminant.name }}</h2>
+
+    <div class="hero-unit">
+        <table class="table table-condensed">
+            {% for f in site_contaminant.action_level.display_fields %}
+            <tr>
+                <td>{% get_verbose_field_name site_contaminant.action_level f %}</td>
+                <td>{% getattribute site_contaminant.action_level f %}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
 {% endblock %}
