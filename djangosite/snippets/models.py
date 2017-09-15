@@ -1,6 +1,5 @@
 from django.db import models
 
-
 land_use_types = [
     ('unrestricted', 'Unrestricted'),
     ('commercial', 'Commercial/Industrial'),
@@ -16,6 +15,7 @@ sw_distance_types = [
     ('not_close', '>= 150'),
 ]
 
+
 # Create your models here.
 class Contaminant(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -23,6 +23,7 @@ class Contaminant(models.Model):
 
     def __str__(self):
         return str(self.name)
+
 
 class SiteQuery(models.Model):
     site_id = models.IntegerField()
@@ -35,6 +36,7 @@ class SiteQuery(models.Model):
 
     def __str__(self):
         return "site query for " + str(self.address)
+
 
 class ActionLevel(models.Model):
     contaminant = models.ForeignKey(Contaminant, on_delete=models.CASCADE)
@@ -54,13 +56,14 @@ class ActionLevel(models.Model):
     indoor_air = models.FloatField(blank=True)
 
     def __str__(self):
-        s = 'Action levels for ' 
+        s = 'Action levels for '
         s += str(self.contaminant)
         s += ' for ' + str(self.land_use) + ' land use, '
         s += str(self.groundwater_use) + ' groundwater use, and '
         s += str(self.sw_distance) + ' from surface water'
 
         return s
+
 
 class SiteContaminant(models.Model):
     sitequery = models.ForeignKey(SiteQuery, on_delete=models.CASCADE)
