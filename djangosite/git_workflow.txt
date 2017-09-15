@@ -1,6 +1,6 @@
 
-git pull ?upstream
-get checkout -b <branchname> # what kind of branch
+git pull ?upstream master
+git checkout -b <branchname> # what kind of branch
 <loop as needed
 git commit # code,  add to branch
 git checkout master # switch to master

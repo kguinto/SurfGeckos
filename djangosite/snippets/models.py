@@ -7,13 +7,13 @@ land_use_types = [
 ]
 
 groundwater_use_types = [
-    ('drinking', 'drinking'),
-    ('nondrinking', 'nondrinking'),
+    ('drinking', 'Drinking'),
+    ('nondrinking', 'Nondrinking'),
 ]
 
 sw_distance_types = [
-    ('close', '< 150'),
-    ('not_close', '>= 150'),
+    ('close', '< 150m'),
+    ('not_close', '>= 150m'),
 ]
 
 # Create your models here.
@@ -31,8 +31,8 @@ class SiteQuery(models.Model):
     timestamp = models.DateTimeField(editable=False, auto_now=True)
     land_use = models.CharField(max_length=24, choices=land_use_types)
     groundwater_use = models.CharField(max_length=24, choices=groundwater_use_types)
-    sw_distance = models.CharField(max_length=24, choices=sw_distance_types)
-
+    sw_distance = models.CharField('Distance from surface water', max_length=24, choices=sw_distance_types)
+    
     def __str__(self):
         return "site query for " + str(self.address)
 
