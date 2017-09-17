@@ -51,12 +51,23 @@ A = ['contaminant', 'soil_far', 'groundwater_far', 'soil_close', 'groundwater_cl
 C = ['contaminant', 'state_A', 'state_B', 'indoor_residential', 'indoor_commerical', 'shallow_residential', 'shallow_commercial']
 D = ['contaminant', 'freshwater', 'marine', 'estuarine']
 A1 = ['contaminant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'background', 'direct_exposure', 'vapor_intrusion', 'drinking_water']
-C1a = ['contaminant', 'state_A', 'state_B', 'unrestricted', 'commercial']
-C1b = ['extra', 'contaminant', 'state_A', 'state_B', 'unrestricted', 'commercial']
+C1a = ['extra', 'contaminant', 'state_A', 'state_B', 'unrestricted', 'commercial']
 C2 = ['contaminant', 'state_A', 'state_B', 'unrestricted_lowest', 'unrestricted_carcinogenic', 'unrestricted_noncarcinogenic', 'commercial_lowest', 'commercial_carcinogenic', 'commercial_noncarcinogenic']
-C3 =  ['contaminant', 'state_A', 'state_B', 'urf', 'rfc', 'unrestricted_lowest', 'unrestricted_carcinogenic', 'unrestricted_noncarcinogenic', 'commercial_lowest', 'commercial_carcinogenic', 'commercial_noncarcinogenic']
+C3 =  ['contaminant', 'state_A', 'state_B', 'urf', 'rfc', 'unrestricted_lowest', 'unrestricted_carcinogenic', 'unrestricted_noncarcinogenic', 'commercial_lowest', 'commercial_carcinogenic', 'commercial_noncarcinogenic', 'odor_threshold']
 D1a = ['contaminant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'vapor_intrusion', 'aquatic_impacts']
-E= ['contaminant', 'koc', 'koc_for_leaching', 'h', 'daf', 'saturation_limit', 'concentration_close_drinking', 'concentration_far_drinking',  'concentration_close_not_drinking', 'concentration_far_not_drinking', 'leaching_close_drinking', 'leaching_far_drinking',  'leaching_close_not_drinking', 'leaching_far_not_drinking',]
+D1c = ['contaminant', 'eal', 'basis', 'gross_contamination', 'vapor_intrusion', 'aquatic_impacts']
+D2a = ['containant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'aquatic_impacts', 'biaccumulation']
+D2b = ['contaminant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'biaccumulation']
+D3a = ['contaminant', 'eal', 'basis', 'hdoh', 'other_criteria', 'reference', 'risk_action_level', 'risk_basis']
+D3b = ['contaminant', 'tapwater_goal', 'basis', 'carcinogenic_effects', 'mutagenic_effects', 'noncancer_effects']
+D4a = ['contaminant', 'estuarine_chronic_toxicity', 'estuarine_acute_toxicity', 'freshwater_chronic_toxicity', 'freshwater_acute_toxicity', 'marine_chronic_toxicity', 'marine_acute_toxicity']
+D4b = ['contaminant', 'estuarine_goal', 'estuarine_basis', 'freshwater_goal', 'freshwater_basis', 'marine_goal', 'marine_basis']
+D4c = ['contaminant', 'estuarine_goal', 'estuarine_basis', 'freshwater_goal', 'freshwater_basis', 'saltwater_goal', 'saltwater_basis']
+D4d = ['contaminant', 'freshwater_chronic', 'freshwater_acute', 'saltwater_chronic', 'saltwater_acute']
+D4e = ['contaminant', 'freshwater_usepa_chronic', 'freshwater_usepa_acute', 'freshwater_other_chronic', 'freshwater_chronic_basis', 'freshwater_other_acute', 'freshwater_other_basis',  'marine_usepa_chronic', 'marine_usepa_acute', 'marine_other_chronic', 'marine_chronic_basis', 'marine_other_acute', 'marine_other_basis'] 
+D4f = ['contaminant', 'criteria', 'basis', 'hi_doh_wqs', 'usepa_nwqc']
+D5 = ['contaminant', 'agriculturual_water_goals']
+E= ['extra', 'sorting', 'contaminant', 'koc', 'koc_for_leaching', 'h', 'daf', 'saturation_limit', 'concentration_close_drinking', 'concentration_far_drinking',  'concentration_close_not_drinking', 'concentration_far_not_drinking', 'leaching_close_drinking', 'leaching_far_drinking',  'leaching_close_not_drinking', 'leaching_far_not_drinking',]
 
 
 columns = {
@@ -69,14 +80,28 @@ columns = {
 	15:A1,
 	16:A1,
 	17:C1a,
-	18:C1b,
+	18:C1a,
 	19:C2,
 	20:C3,
 	21:D1a,
 	22:D1a,
-	23:D1a,
-	24:D1a,
-	37:E,
+	23:D1c,
+	24:D1c,
+	25:D2a,
+	26:D2b,
+	27:D2b,
+	28:D3a,
+	29:D3b,
+	30:D4a,
+	31:D4b,
+	32:D4c,
+	33:D4d,
+	34:D4e,
+	35:D4f,
+	36:D5,
+	37:E, # Currently fails
+	38:[], # Currently fails
+	39:[],
 	
 	
 	
@@ -144,9 +169,15 @@ def read_excel(workbook, names, sheet, skiprows, skipfooter):
         header=None,
 		skiprows=skiprows,
 		skipfooter=skipfooter,
-        names=names # Doesn't seem to be doing what I want
+        #names=names # Doesn't seem to be doing what I want
     )
-	df.columns = names # Shouldn't be needed, but names=names above not working right for me.
+	try:
+		df.columns = names # Shouldn't be needed, but names=names above not working right for me.
+	except ValueError as e:
+		print(sheet)
+		logging.debug(e)
+		logging.debug(df.head())
+		sys.exit(1)
 	return df
 
 def get_sheetnames(workbook):
@@ -261,7 +292,7 @@ class Loader:
 	"""
 
 	"""
-	def __init__(self, workbook_file, db_name, sheets=range(9,16), mongo=False, sheet2=False):
+	def __init__(self, workbook_file, db_name, sheets=range(9,37), mongo=False, sheet2=False):
 		"""
 		tables in sheets 9-51
 		"""
@@ -280,12 +311,13 @@ class Loader:
 		"""
 		"""
 		for sheet in self.sheets:
-			logging.debug("Loading sheet {}".format(sheet))
+			logging.info("Loading sheet {}".format(sheet))
 			try:
 				df = read_excel(self.workbook_file,
 								columns[sheet], sheet, self.skiprows[sheet],
 								self.skipfooter[sheet]
 				)
+				logging.debug(df.head())
 			except TypeError:
 				logging.debug(columns[sheet])
 				logging.debug(sheet)
@@ -294,6 +326,7 @@ class Loader:
 				sys.exit(1)
 			
 			if mongo: # Use mongodb
+
 				mongo_load(df, self.db_name, self.collections[sheet])
 
 			else: # Use sqlite3
