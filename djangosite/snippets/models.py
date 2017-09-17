@@ -55,6 +55,15 @@ class ActionLevel(models.Model):
     shallow_soil_vapor = models.FloatField(blank=True)
     indoor_air = models.FloatField(blank=True)
 
+    display_fields = ['direct_exposure', 
+                      'soil_vapor_emissions', 
+                      'terrestrial_ecotoxicity', 
+                      'soil_gross_contamination', 
+                      'leaching', 'dw_toxicity', 'gw_vapor_emissions', 
+                      'aquatic_ecotoxicity', 'gw_gross_contamination', 
+                      'shallow_soil_vapor', 'indoor_air'
+                      ]
+
     def __str__(self):
         s = 'Action levels for '
         s += str(self.contaminant)
@@ -71,6 +80,12 @@ class SiteContaminant(models.Model):
     soil = models.FloatField(verbose_name='Soil (mg/kg)')
     gw = models.FloatField(verbose_name='Groundwater (μg/L)')
     soil_vapor = models.FloatField(verbose_name='Soil Vapor (μg/m³)')
+
+    def action_level(self):
+        return ActionLevel.objects.filter(contaminant=self.contaminant,
+                                          land_use=self.sitequery.land_use,
+                                          groundwater_use=self.sitequery.groundwater_use,
+                                          sw_distance=self.sitequery.sw_distance).all()[0]
 
     def __str__(self):
         return str(self.contaminant.name) + ' at ' + str(self.sitequery)
