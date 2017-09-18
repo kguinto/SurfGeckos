@@ -1,5 +1,5 @@
 """
-Currently creates a databse of tables A through B2 (9-16)
+Currently creates a databse of many but not all tables. Currently fails on F-1, G1-4, H,J
 
 From command line:
 python excel2db.py <excel file> 
@@ -36,7 +36,7 @@ import pandas
 import openpyxl
 
 logging_format = '%(asctime)s %(message)s'
-logging.basicConfig(format=logging_format, level=logging.DEBUG)
+logging.basicConfig(format=logging_format, level=logging.INFO)
 
 # TODO: Explore sqlalchemy
 # TODO: Make schema for all files
@@ -51,7 +51,7 @@ A = ['contaminant', 'soil_far', 'groundwater_far', 'soil_close', 'groundwater_cl
 C = ['contaminant', 'state_A', 'state_B', 'indoor_residential', 'indoor_commerical', 'shallow_residential', 'shallow_commercial']
 D = ['contaminant', 'freshwater', 'marine', 'estuarine']
 A1 = ['contaminant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'background', 'direct_exposure', 'vapor_intrusion', 'drinking_water']
-C1a = ['extra', 'contaminant', 'state_A', 'state_B', 'unrestricted', 'commercial']
+C1a = ['contaminant', 'extra', 'state_A', 'state_B', 'unrestricted', 'commercial']
 C2 = ['contaminant', 'state_A', 'state_B', 'unrestricted_lowest', 'unrestricted_carcinogenic', 'unrestricted_noncarcinogenic', 'commercial_lowest', 'commercial_carcinogenic', 'commercial_noncarcinogenic']
 C3 =  ['contaminant', 'state_A', 'state_B', 'urf', 'rfc', 'unrestricted_lowest', 'unrestricted_carcinogenic', 'unrestricted_noncarcinogenic', 'commercial_lowest', 'commercial_carcinogenic', 'commercial_noncarcinogenic', 'odor_threshold']
 D1a = ['contaminant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'vapor_intrusion', 'aquatic_impacts']
@@ -67,8 +67,12 @@ D4d = ['contaminant', 'freshwater_chronic', 'freshwater_acute', 'saltwater_chron
 D4e = ['contaminant', 'freshwater_usepa_chronic', 'freshwater_usepa_acute', 'freshwater_other_chronic', 'freshwater_chronic_basis', 'freshwater_other_acute', 'freshwater_other_basis',  'marine_usepa_chronic', 'marine_usepa_acute', 'marine_other_chronic', 'marine_chronic_basis', 'marine_other_acute', 'marine_other_basis'] 
 D4f = ['contaminant', 'criteria', 'basis', 'hi_doh_wqs', 'usepa_nwqc']
 D5 = ['contaminant', 'agriculturual_water_goals']
-E= ['extra', 'sorting', 'contaminant', 'koc', 'koc_for_leaching', 'h', 'daf', 'saturation_limit', 'concentration_close_drinking', 'concentration_far_drinking',  'concentration_close_not_drinking', 'concentration_far_not_drinking', 'leaching_close_drinking', 'leaching_far_drinking',  'leaching_close_not_drinking', 'leaching_far_not_drinking',]
-
+E= ['other', 'contaminant', 'extra', 'koc', 'koc_for_leaching', 'h', 'daf', 'saturation_limit', 'concentration_close_drinking', 'concentration_far_drinking',  'concentration_close_not_drinking', 'concentration_far_not_drinking', 'leaching_close_drinking', 'leaching_far_drinking',  'leaching_close_not_drinking', 'leaching_far_not_drinking',]
+F2=['contaminant', 'final_unrestricted_action_level', 'final_commerical_action_level', 'raw_unrestricted_action_level', 'raw_commercial_action_level', 'soil_saturation_limit', 'vp', 'ort_ugm3', 'ort_ppmv',  'odor_index']
+I1 = ['contaminant', 'eal', 'basis', 'carcinogens', 'mutagens', 'noncarcinogens_final', 'noncarcinogens_hq', 'saturation']
+I2 = ['contaminant', 'eal', 'basis', 'carcinogens', 'noncarcinogens_final', 'noncarcinogens_hq', 'saturation']
+K = ['contaminant', 'range', 'upper_bound', 'background', 'action_level']
+L = ['contaminant', 'residential', 'commercial']
 
 columns = {
 	9:A,
@@ -99,10 +103,21 @@ columns = {
 	34:D4e,
 	35:D4f,
 	36:D5,
-	37:E, # Currently fails
-	38:[], # Currently fails
-	39:[],
-	
+	37:E, 
+	38:[], # F-1
+	39:F2,
+	40:F2,
+	41:[], # G-1
+	42:[], # G-2
+	43:[], # G-3
+	44:[], # G-4
+	45:[], # H
+	46:I1,
+	47:I2,
+	48:I2,
+	49:[], # J
+	50:K,
+	51:L
 	
 	
 } #sheet:names
@@ -146,6 +161,7 @@ I could then run mongodb by typing:
 						help='name of collection/table')
 	parser.add_argument('--mongo', action='store_true',
 						help='uses mongodb instead of sqllite')
+	parser.add_argument('-v', '--verbose', action='store_true')
 	args = parser.parse_args()
 
 	if args.names:
@@ -169,15 +185,11 @@ def read_excel(workbook, names, sheet, skiprows, skipfooter):
         header=None,
 		skiprows=skiprows,
 		skipfooter=skipfooter,
-        #names=names # Doesn't seem to be doing what I want
+    
     )
-	try:
-		df.columns = names # Shouldn't be needed, but names=names above not working right for me.
-	except ValueError as e:
-		print(sheet)
-		logging.debug(e)
-		logging.debug(df.head())
-		sys.exit(1)
+	
+	df.columns = names 
+	
 	return df
 
 def get_sheetnames(workbook):
@@ -195,10 +207,14 @@ def get_skiprows(workbook, sheets):
 	"""
 	result = {}
 	for sheetnum in sheets:
+		if sheetnum == 37:
+			col = 1
+		else:
+			col = 0
 		sheet = workbook.worksheets[sheetnum]
 		for i,row in enumerate(sheet.rows):
 			try:
-				if 'ACENAPHTHENE' in row[0].value:
+				if 'ACENAPHTHENE' in row[col].value:
 					result[sheetnum]=list(range(i))
 					break
 			except TypeError:
@@ -208,12 +224,16 @@ def get_skiprows(workbook, sheets):
 def get_skipfooter(workbook, sheets):
 	result = {}
 	for sheetnum in sheets:
+		if sheetnum == 37:
+			col = 1
+		else:
+			col = 0
 		sheet = workbook.worksheets[sheetnum]
 		result[sheetnum] = []
 		done = False
 		for i, row in enumerate(sheet.rows):
 			try:
-				if 'ZINC' in row[0].value:
+				if 'ZINC' in row[col].value:
 					done = True
 					continue
 				if done:
@@ -269,7 +289,7 @@ def mongo_load(df, db_name, collection_name,
 	client = MongoClient(mongohost, mongoport)
 	db = client[db_name]
 	collection = db[collection_name]
-	collection.insert_many(records)
+	collection.insert_many(records) # May create duplicate records
 
 	# To test
 	logging.debug(collection.find_one())
@@ -292,6 +312,8 @@ def load_sheet_2(workbook, db_name, collection_name, mongo=False, startrow=32, s
 		mongo_load(df, db_name, collection_name)
 	else:
 		sqlite_load(df, db_name, collection_name, columns)
+
+
 		
 
 	
@@ -307,7 +329,7 @@ class Loader:
 		if sheets:
 			self.sheets = sheets
 		else:
-			self.sheets = list(range(9,37)) + []
+			self.sheets = list(range(9,52)) + []
 		self.db_name = db_name
 		workbook = openpyxl.load_workbook(workbook_file)
 		self.collections = get_sheetnames(workbook)
@@ -330,27 +352,25 @@ class Loader:
 								self.skipfooter[sheet]
 				)
 				logging.debug(df.head())
-			except TypeError:
-				logging.debug(columns[sheet])
-				logging.debug(sheet)
-				logging.debug(self.skiprows[sheet])
-				logging.debug(self.skipfooter[sheet])
-				sys.exit(1)
 			
-			if mongo: # Use mongodb
+				if mongo: # Use mongodb
 
-				mongo_load(df, self.db_name, self.collections[sheet])
+					mongo_load(df, self.db_name, self.collections[sheet])
 
-			else: # Use sqlite3
-				sqlite_load(df, self.db_name,
-							self.collections[sheet],
-							columns[sheet])			
-		
-		
+				else: # Use sqlite3
+					sqlite_load(df, self.db_name,
+								self.collections[sheet],
+		   						columns[sheet])			
+			except:
+				logging.debug("ERROR")
+	
+	
 
 if __name__ == '__main__':
 
 	args, names = _parse_args()
+	if args.verbose:
+		logging.root.setLevel(logging.DEBUG)
 	Loader(args.input, args.db, mongo=args.mongo)
 
 
