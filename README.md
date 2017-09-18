@@ -9,11 +9,16 @@ virtualenv env
 pip -r requirements.txt
 ```
 
+Everything works with SQLite by default. To use MongoDB, it must be installed and running on your computer. To run from a command line:
+```
+mongod
+```
+
 Auxillary files in the `src` directory:
 
 * `excel2db.py`
 
-	Loads excel file into mongodb or sqlite database
+	Loads excel file into MongoDB or SQLite database
 	
 	To use as a module:
 	```
@@ -23,11 +28,12 @@ Auxillary files in the `src` directory:
 	Loader(myfile, mydb)
 	```
 	
-	sqlite is the default. To use mongodb:
+	SQLite is the default. To use MongoDB:
 	
 	`Loader(myfile, mydb, mongo=True)`
 	
 	From the command line:
+
 	`python excel2db.py <excel file>`
 	
 	OR
@@ -44,4 +50,5 @@ Auxillary files in the `src` directory:
 	```
 
 	From the command line (tests code on sample input):
-		`python compiler.py`
+	
+	`python compiler.py`
