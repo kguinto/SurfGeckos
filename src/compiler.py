@@ -11,7 +11,7 @@ python compiler.py
 	input_data = {
 		"site_scenario":{
 			"land_use":"Unrestricted",
-			"groundwater_use":"dw", #not_dw
+			"groundwater_use":"drinking", #not_drinking
 			"sw_distance":"not_close", #close
 			"name":"My house",
 			"address":"123 Happy Place",
@@ -119,7 +119,7 @@ import sys
 import logging
 
 logging_format = '%(asctime)s %(message)s'
-logging.basicConfig(format=logging_format, level=logging.DEBUG)
+logging.basicConfig(format=logging_format, level=logging.INFO)
 
 help_ = """
 
@@ -395,10 +395,10 @@ IF(E28="YES",
 		"""
 		
 		fields = {
-			('close', 'dw'):'leaching_close_drinking',
-			('close', 'not_dw'):'leaching_close_not_drinking',
-			('not_close', 'dw'):'leaching_far_drinking',
-			('not_close', 'not_dw'): 'leaching_far_not_drinking',
+			('close', 'drinking'):'leaching_close_drinking',
+			('close', 'not_drinking'):'leaching_close_not_drinking',
+			('not_close', 'drinking'):'leaching_far_drinking',
+			('not_close', 'not_drinking'): 'leaching_far_not_drinking',
 		}
 		table = "Table E Leaching"
 
@@ -434,7 +434,7 @@ if __name__ == '__main__':
 	input_data = {
 		"site_scenario":{
 			"land_use":"Unrestricted",
-			"groundwater_use":"dw", #not_dw
+			"groundwater_use":"drinking", #not_drinking
 			"sw_distance":"not_close", #close
 			"name":"My house",
 			"address":"123 Happy Place",
