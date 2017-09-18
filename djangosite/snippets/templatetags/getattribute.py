@@ -17,3 +17,11 @@ def getattribute(value, arg):
         return value[int(arg)]
     else:
         return settings.TEMPLATE_STRING_IF_INVALID
+
+
+@register.simple_tag
+def general_number(value):
+
+    if type(value) == float:
+        value = '%g' % value
+    return value
