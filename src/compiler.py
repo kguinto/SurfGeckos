@@ -39,7 +39,82 @@ report.record
 
 # report.record will be a dictionary with the data found in spreadsheet 4
 
+# Sample output:
+
+{
+	'site_scenario':
+	{
+		'land_use': 'Unrestricted',
+		'groundwater_use': 'Drinking Water Resource',
+		'sw_distance': 'not_close',
+		'name': 'My house',
+		'address': '123 Happy Place',
+		'site_id': '553423',
+		'timestamp': 0
+	},
+	'contaminants':
+	[{
+		'concentrations':
+		{
+			'soil': 10,
+			'groundwater': 10,
+			'soil_vapor': 10
+		},
+		'contaminant': 'ACENAPHTHENE',
+		'soil_hazards':
+		{
+			'direct_exposure':
+			{
+				'units': 'mg/kg',
+				'action_level': '-',
+				'potential_hazard': '-',
+				'table': 'Table I-1'
+			},
+			'vapor_emissions':
+			{
+				'units': 'mg/kg',
+				'action_level': '-',
+				'potential_hazard': '-',
+				'table': 'Table C-1b'
+			},
+			'ecotoxicity':
+			{
+				'units': 'mg/kg',
+				'action_level': '-',
+				'potential_hazard': '-',
+				'table': 'Table L'
+			},
+			'gross_contamination':
+			{
+				'units': 'mg/kg',
+				'action_level': '-',
+				'potential_hazard': '-',
+				'table': 'Table F-2'
+			},
+			'leaching':
+			{
+				'units': 'mg/kg',
+				'action_level': '-',
+				'potential_hazard': '-',
+				'table': 'Table E-1'
+			},
+			'background':
+			{'units': 'mg/kg',
+			 'action_level': '-'
+			},
+			'eal':
+			{
+				'units': 'mg/kg',
+				'action_level': '-'
+			},
+			'basis': 'Background'
+		}
+	}
+	]
+}
 """
+
+import json
 
 help_ = """
 
@@ -48,6 +123,18 @@ We will work with mongodb by default.
 A record will correspond to a specific project and chemical.
 """
 
+def db_lookup(value, db_name, table, field, mongo=False):
+	return -1
+	if mongo:
+		return mongo_lookup(value, db_name, table, field)
+	else:
+		sqlite_lookup(value, db_name, table, field)
+
+def mongo_lookup(value, db_name, collection, field):
+	pass
+
+def sqlite_lookup(value, db_name, table, field):
+	pass
 
 
 class SurferReport:
@@ -55,9 +142,12 @@ class SurferReport:
 	An object to represent the data found in Sheet labeled
 	4. EAL Surfer - Surfer Report
 	"""
-	def __init__(self, input_data):
+	
+	def __init__(self, input_data, db_name, mongo=False):
 		"""
 		"""
+		self.db_name = db_name
+		self.mongo = mongo # boolean
 		self.record = self._create_record(input_data)
 
 	def to_db(self, mongohost, mongoport, database, collection_name):
@@ -73,10 +163,10 @@ class SurferReport:
 		Produces a record such as:
 
 		{
-		"site_scenario":{"Site Name":__, "Site Address":__, "Site ID Number":__},
-		"Site Scenario":{"land_use":__, "groundwater_use":__, "sw_distance":__},
-		"Chemical of Concern":__,
-		"Soil Environmental Hazards": __
+		"site_scenario":{"name":__, "address":__, "site_id":__, "land_use":__, "groundwater_use":__, "sw_distance":__},
+		:contaminants:[{"contaminant":__,
+		"concentrations":__,
+		"soil_hazards": __}]
 		}
 		"""
 		concentration_keys = [
@@ -132,14 +222,16 @@ class SurferReport:
 				out_data["soil_hazards"][key] = {}
 				out_data["soil_hazards"][key]["units"] = soil_contamination_unit
 
-			for key in soil_keys + other_soil_keys:
+			for key in soil_keys:
 			
 				out_data["soil_hazards"][key]["action_level"] = self._tier_1_action_level(key, input_data, chemical_data)
-			for key in soil_keys:
 				out_data["soil_hazards"][key]["potential_hazard"] = self._potential_hazard(key, chemical_data, out_data["soil_hazards"][key]["action_level"])
 				out_data["soil_hazards"][key]["table"] = self._referenced_table(key, input_data, chemical_data)
-			
-			out_data["soil_hazards"][basis] = self._basis(chemical_data)
+
+			out_data["soil_hazards"]["background"] = self._background(chemical_data["contaminant"])
+			lowest = self._lowest_soil_eal(out_data["soil_hazards"], soil_keys)
+			out_data["soil_hazards"][basis] = lowest[0]
+			out_data["soil_hazards"]["eal"]["action_level"] = self._final_eal(lowest[1], out_data["soil_hazards"]["background"])
 			record['contaminants'].append(out_data)
 		return record
 
@@ -170,44 +262,63 @@ class SurferReport:
 			return "-"
 		return value
 
-	def _basis(self, input_data):
-		"""
-		Placeholder function
-
-		Surfer Compiler HDOH::Table 1::D25
-		IF(C71=C70,"Background",(IF(C71=C46,B42,IF(C71=C50,B47,IF(C71=C56,B51,IF(C71=C60,B57,B61))))))
-		C71=Final Tier 1 Soil EAL
-		"""
-		# TODO: This is just a placeholder
-		return "Background"
-
+		
 	def _tier_1_action_level(self, key, input_data, chemical_data):
 		"""
-		PLACEHOLDER: Unfinished
-		compiler - C46
 
-		IF((IF(input_data["land_use"] == 'Unrestricted',C43,C44))=0,"-",(IF('2. EAL Surfer - Tier 1 EALs'::Table 1::D5='2. EAL Surfer - Tier 1 EALs'::Table 1::O13,C43,C44)))
 		"""
-		if input_data["site_scenario"]["land_use"]:
-			# compiler C43
-			result = 0
-			#IF(VLOOKUP('2. EAL Surfer - Tier 1 EALs'::Table 1::H3,'Table I-1 (Unrestricted SoilDE)'::Table 1::A6:H159,2)=0,"-",VLOOKUP('2. EAL Surfer - Tier 1 EALs'::Table 1::H3,'Table I-1 (Unrestricted SoilDE)'::Table 1::A6:H159,2))
-			
+		if key=='leaching':
+			return self._leaching_eal()
+		tables = {
+			"vapor_emissions":'Table C-1b (Soil to IA)',
+			"ecotoxicity":'Table L (Soil Ecotoxicity)',
+			"gross_contamination":'Table F-2 (Exposed Soils)'
+		}
+		
+		fields = {
+			"vapor_emissions":("unrestricted", "commercial"),
+			"ecotoxicity":("residential", "commercial"),
+			"gross_contamination":("final_unrestricted_action_level",
+								   "final_commercial_action_level")
+		}
+		
+
+		if input_data["site_scenario"]["land_use"]=="Unrestricted":
+			if key=="direct_exposure":
+				table = "Table I-2 (C-I Soil DE)"
+				field = "eal"
+			else:
+				table = tables[key]
+				field = fields[key][0]
 		else:
-			# compiler - C44
-			result = 0
-			# IF(VLOOKUP('2. EAL Surfer - Tier 1 EALs'::Table 1::H3,'Table I-2 (C-I Soil DE)'::Table 1::A6:G159,2)=0,"-",VLOOKUP('2. EAL Surfer - Tier 1 EALs'::Table 1::H3,'Table I-2 (C-I Soil DE)'::Table 1::A6:G159,2))
+			if key=="direct_exposure":
+				table = "Table I-2 (C-I Soil DE)"
+				field = "eal"
+			else:
+				table = tables[key]
+				field = fields[key][1]
+		result = self._db(chemical_data["contaminant"],
+						  table,
+						  field)
 		if result == 0:
 			return '-'
 		return result
+
+	def _final_eal(self, lowest, background):
+		"""
+		"""
+		if background in ["?", "-"]:
+			return lowest
+		return max(float(background), float(lowest))
+			
 	
-	def _potential_hazard(self, key, input_data, tier_1_action_level):
+	def _potential_hazard(self, key, input_data, eal):
 		"""
 		e.g. IF(F24="-","-",IF($D$19="-","-",(IF($D$19>F24,"Yes","No"))))
 		"""
 		try:
 			soil = input_data["concentrations"]["soil"]
-			if  float(soil) > float(tier_1_action_level):
+			if  float(soil) > float(eal):
 				return "Yes"
 			else:
 				return "No"
@@ -226,6 +337,44 @@ class SurferReport:
 			"gross_contamination": "Table F-2",
 		}
 		return reference_tables[key]
+
+	def _background(self, contaminant):
+		"""
+		compiler C70
+		"""
+		table =  "Table K (Soil Background)"
+		if self._db(contaminant, "auxillary", "code")==2:
+			
+			result = self._db(contaminant,
+							  table,
+							  "action_level")
+			if not result:
+				return "?"
+		else:
+			return "-"
+
+	def _leaching_eal(self):
+		"""
+		placeholder
+		"""
+		return -1
+
+	def _lowest_soil_eal(self, hazards, keys):
+		"""
+		input should be out_data["soil_hazards"]
+		returns key, eal
+		"""
+		return min(
+			(
+				(key, hazards[key]["action_level"])
+				for key in keys
+			),
+			key=lambda __:__[1]
+		)
+
+	def _db(self, value, table, field):
+		return db_lookup(value, self.db_name, table, field, self.mongo)
+
 
 
 if __name__ == '__main__':
@@ -254,5 +403,5 @@ if __name__ == '__main__':
 		],
 	}
 	
-	report = SurferReport(input_data)
-	print(report.record)
+	report = SurferReport(input_data, db_name="surfer")
+	print(json.dumps(report.record, indent=4))
