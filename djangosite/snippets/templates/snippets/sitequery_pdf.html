@@ -1,0 +1,80 @@
+
+{% load verbose_names %}
+{% load getattribute %}
+
+{% block title %}Site Query Details{% endblock %}
+
+{% block content %}
+<div class="hero-unit">
+    <table class="table table-condensed">
+        <tbody>
+            <tr>
+                <td>{% get_verbose_field_name object "name" %}</td>
+                <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+                <td>{% get_verbose_field_name object "site_id" %}</td>
+                <td>{{ object.site_id }}</td>
+            </tr>
+            <tr>
+                <td>{% get_verbose_field_name object "address" %}</td>
+                <td>{{ object.address }}</td>
+            </tr>
+            <tr>
+                <td>{% get_verbose_field_name object "timestamp" %}</td>
+                <td>{{ object.timestamp }}</td>
+            </tr>
+            <tr>
+                <td>{% get_verbose_field_name object "land_use" %}</td>
+                <td>{{ object.get_land_use_display }}</td>
+            </tr>
+            <tr>
+                <td>{% get_verbose_field_name object "groundwater_use" %}</td>
+                <td>{{ object.get_groundwater_use_display }}</td>
+            </tr>
+            <tr>
+                <td>{% get_verbose_field_name object "sw_distance" %}</td>
+                <td>{{ object.get_sw_distance_display }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="hero-unit">
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Contaminant</th>
+                <th>Soil (mg/kg)</th>
+                <th>Groundwater (μg/L)</th>
+                <th>Soil Vapor (μg/m³)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for site_contaminant in object.sitecontaminant_set.all %}
+            <tr>
+                <td>{{ site_contaminant.contaminant.name }}</td>
+                <td>{{ site_contaminant.soil }}</td>
+                <td>{{ site_contaminant.gw }}</td>
+                <td>{{ site_contaminant.soil_vapor }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+    {% for site_contaminant in object.sitecontaminant_set.all %}
+    <h2>EAL Results for {{ site_contaminant.contaminant.name }}</h2>
+
+    <div class="hero-unit">
+        <table class="table table-condensed">
+            {% for f in site_contaminant.action_level.display_fields %}
+            <tr>
+                <td>{% get_verbose_field_name site_contaminant.action_level f %}</td>
+                <td>{% getattribute site_contaminant.action_level f %}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
+{% endblock %}

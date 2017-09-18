@@ -16,7 +16,7 @@
 {% bootstrap_formset_errors formset %}
 <form role="form" method="post">
     {% csrf_token %}
-    {% bootstrap_formset formset layout='horizontal'%}
+    {% bootstrap_formset formset %}
     {% buttons submit='OK' reset="Reset" %}{% endbuttons %}
 </form>
 

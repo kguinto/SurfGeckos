@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.forms import modelform_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template import RequestContext
 from django.urls import reverse
 from django.views.generic import ListView, DetailView
 from rest_framework import views, viewsets
@@ -29,6 +30,16 @@ class SiteQueryDetail(DetailView):
 def index(request):
     return render(request, 'snippets/index.html')
 
+"""def sitequery_pdf(request, pk):
+    sitequery = SiteQuery.objects.get(pk=pk)
+    context = {'object': sitequery}
+    template = 'snippets/sitequery_pdf.html'
+
+    return PDFTemplateResponse(request=request,
+                               cmd_options={'disable-javascript':True}, 
+                               template=template, 
+                               context=context)"""
+
 def sitequery(request, sitequery_id):
     query = SiteQuery()
     return render(request, 'snippets/sitequery_detail.html', {'sitequery': query})
@@ -56,7 +67,7 @@ def create_sitecontaminant(request, sitequery_id):
     fields = ['contaminant', 'soil', 'gw', 'soil_vapor']
     SiteContaminantFormSet = modelformset_factory(SiteContaminant,
         fields=fields,
-        extra=2,
+        extra=3,
         )
     if request.method == 'POST':
         formset = SiteContaminantFormSet(request.POST, request.FILES)
