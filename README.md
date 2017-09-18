@@ -9,18 +9,16 @@ This project builds upon and improves upon the spreadsheet `EAL Surfer (HDOH Sum
 
 
 
-From the command line within the project folder
+From the command line 
 ```
+git clone https://github.com/HACC17/SurfGeckos.git
+cd SurfGeckos
 virtualenv env
 source env/bin/activate
-pip -r requirements.txt
+pip install -r requirements.txt
 cd djangosite
-# create a superuser
-python manage.py createsuperuser
 # create local .sqlite db
 python manage.py migrate
-# load a copy of our test database
-python manage.py loaddata db.json
 # start server
 python manage.py runserver
 ```
