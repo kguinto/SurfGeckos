@@ -73,25 +73,47 @@
         </tbody>
     </table>
 </div>
-
-    {% for site_contaminant in object.sitecontaminant_set.all %}
-    <h2>EAL Results for {{ site_contaminant.contaminant.name }}</h2>
+<a href="{% url 'snippets:create_sitecontaminant' sitequery_id=object.id %}">
+{% bootstrap_button "Add contaminant" button_type="link" button_class="btn-primary"%}
+</a>
+{% for site_contaminant in object.sitecontaminant_set.all %}
+<h2>EAL Results for {{ site_contaminant.contaminant.name }}</h2>
 
     <div class="hero-unit">
         <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>Environmental Hazard</th>
+
+            <tbody>
+                <tr><th>Soil Environmental Hazards</th>
                     <th>Tier 1 Action Level</th>
                     <th>Potential Hazard</th>
                 </tr>
-            </thead>
-            <tbody>
-                {% for f in site_contaminant.action_level.display_fields %}
+                {% for f in site_contaminant.action_level.fields.soil %}
                 <tr>
                     <td>{% get_verbose_field_name site_contaminant.action_level f %}</td>
-                    <td>{% getattribute site_contaminant.action_level f  %}</td>
-                    <td>{% get_hazard site_contaminant.action_level f site_contaminant %}</td>
+                    <td>{% getattribute site_contaminant.action_level f  %}  (mg/kg) </td>
+                    <td>{% get_hazard site_contaminant.action_level f site_contaminant.soil %}</td>
+                </tr>
+                {% endfor %}
+                <tr><th>Groundwater Hazards</th>
+                    <th>Tier 1 Action Level</th>
+                    <th>Potential Hazard</th>
+                </tr>
+                {% for f in site_contaminant.action_level.fields.gw %}
+                <tr>
+                    <td>{% get_verbose_field_name site_contaminant.action_level f %}</td>
+                    <td>{% getattribute site_contaminant.action_level f  %} (μg/L) </td>
+                    <td>{% get_hazard site_contaminant.action_level f site_contaminant.gw %}</td>
+                </tr>
+                {% endfor %}
+                <tr><th>Soil Vapor Environmental Hazards</th>
+                    <th>Tier 1 Action Level</th>
+                    <th>Potential Hazard</th>
+                </tr>
+                {% for f in site_contaminant.action_level.fields.soil_vapor %}
+                <tr>
+                    <td>{% get_verbose_field_name site_contaminant.action_level f %}</td>
+                    <td>{% getattribute site_contaminant.action_level f  %} (μg/m³)</td>
+                    <td>{% get_hazard site_contaminant.action_level f site_contaminant.soil_vapor %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

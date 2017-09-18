@@ -19,7 +19,6 @@ sw_distance_types = [
 # Create your models here.
 class Contaminant(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    direct_exposure = models.FloatField()
 
     def __str__(self):
         return str(self.name)
@@ -43,26 +42,27 @@ class ActionLevel(models.Model):
     land_use = models.CharField(max_length=24, choices=land_use_types)
     groundwater_use = models.CharField(max_length=24, choices=groundwater_use_types)
     sw_distance = models.CharField(max_length=24, choices=sw_distance_types)
-    direct_exposure = models.FloatField(blank=True)
-    soil_vapor_emissions = models.FloatField(blank=True)
-    terrestrial_ecotoxicity = models.FloatField(blank=True)
-    soil_gross_contamination = models.FloatField(blank=True)
-    leaching = models.FloatField(blank=True)
-    dw_toxicity = models.FloatField(blank=True)
-    gw_vapor_emissions = models.FloatField(blank=True)
-    aquatic_ecotoxicity = models.FloatField(blank=True)
-    gw_gross_contamination = models.FloatField(blank=True)
-    shallow_soil_vapor = models.FloatField(blank=True)
-    indoor_air = models.FloatField(blank=True)
+    direct_exposure = models.FloatField(blank=True, null=True)
+    soil_vapor_emissions = models.FloatField(blank=True, null=True)
+    terrestrial_ecotoxicity = models.FloatField(blank=True, null=True)
+    soil_gross_contamination = models.FloatField(blank=True, null=True)
+    leaching = models.FloatField(blank=True, null=True)
+    dw_toxicity = models.FloatField(blank=True, null=True, verbose_name='Drinking Water Toxicity')
+    gw_vapor_emissions = models.FloatField(blank=True, null=True, verbose_name='Groundwater Vapor Emissions')
+    aquatic_ecotoxicity = models.FloatField(blank=True, null=True)
+    gw_gross_contamination = models.FloatField(blank=True, null=True, verbose_name='Groundwater Gross Contamination')
+    shallow_soil_vapor = models.FloatField(blank=True, null=True)
+    indoor_air = models.FloatField(blank=True, null=True)
 
-    display_fields = ['direct_exposure', 
+    fields = {'soil': ['direct_exposure', 
                       'soil_vapor_emissions', 
                       'terrestrial_ecotoxicity', 
                       'soil_gross_contamination', 
-                      'leaching', 'dw_toxicity', 'gw_vapor_emissions', 
-                      'aquatic_ecotoxicity', 'gw_gross_contamination', 
-                      'shallow_soil_vapor', 'indoor_air'
-                      ]
+                      'leaching', ],
+                'gw': ['dw_toxicity', 'gw_vapor_emissions', 
+                      'aquatic_ecotoxicity', 'gw_gross_contamination',],
+                'soil_vapor': ['shallow_soil_vapor', 'indoor_air']
+    }
 
     def __str__(self):
         s = 'Action levels for '

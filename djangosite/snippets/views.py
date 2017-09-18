@@ -67,7 +67,7 @@ def create_sitecontaminant(request, sitequery_id):
     fields = ['contaminant', 'soil', 'gw', 'soil_vapor']
     SiteContaminantFormSet = modelformset_factory(SiteContaminant,
         fields=fields,
-        extra=2,
+        extra=3,
         )
     if request.method == 'POST':
         formset = SiteContaminantFormSet(request.POST, request.FILES)
