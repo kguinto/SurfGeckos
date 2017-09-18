@@ -278,35 +278,47 @@ def mongo_load(df, db_name, collection_name,
 def load_sheet_2(workbook, db_name, collection_name, mongo=False, startrow=32, startcol='M', lastcol='Y'):
 	"""
 	"""
+	columns = ['parameter', 'cas', 'contaminant', 'cancer_risk_residential', 'cancer_risk_ci', 'cancer_risk_workers', 'hard_quotient', 'metal', 'volatile', 'persistent', 'modeled_koc', 'code', 'notes']
 
-	columns = None 
-	df = None
+	df = pandas.read_excel(
+		workbook,
+        sheetname=2,
+        header=startrow-1,
+		parse_cols="{}:{}".format(startcol,lastcol),
+    )
+	df.columns = columns
+	logging.debug(df.head())
 	if mongo:
 		mongo_load(df, db_name, collection_name)
 	else:
 		sqlite_load(df, db_name, collection_name, columns)
-
+		
 
 	
 class Loader:
 	"""
 
 	"""
-	def __init__(self, workbook_file, db_name, sheets=range(9,37), mongo=False, sheet2=False):
+	def __init__(self, workbook_file, db_name, sheets=None, mongo=False, sheet2=True):
 		"""
 		tables in sheets 9-51
 		"""
 		self.workbook_file = workbook_file
-		self.sheets = sheets
+		if sheets:
+			self.sheets = sheets
+		else:
+			self.sheets = list(range(9,37)) + []
 		self.db_name = db_name
 		workbook = openpyxl.load_workbook(workbook_file)
 		self.collections = get_sheetnames(workbook)
-		self.skiprows = get_skiprows(workbook, sheets)
-		self.skipfooter = get_skipfooter(workbook, sheets)
+		self.skiprows = get_skiprows(workbook, self.sheets)
+		self.skipfooter = get_skipfooter(workbook, self.sheets)
 		workbook.close()
 		if sheet2:
-			load_sheet_2(workbook_file, "auxillary", "auxillary", mongo)
+			load_sheet_2(workbook_file, db_name, "auxillary", mongo)
 		self._load(mongo)
+
+		
 	def _load(self, mongo):
 		"""
 		"""
