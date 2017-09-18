@@ -8,6 +8,20 @@ From the command line within the project folder
 virtualenv env
 source env/bin/activate
 pip -r requirements.txt
+cd djangosite
+# create a superuser
+python manage.py createsuperuser
+# create local .sqlite db
+python manage.py migrate
+# load a copy of our test database
+python manage.py loaddata db.json
+# start server
+python manage.py runserver
+# view user dialogue
+# Go to 127.0.0.1:8000/
+# Create a site with unrestricted use, drinking water, <150 from surface water
+# Can print a pdf of the report
+# HEER can modify data in the admin portion, 127.0.0.1:8000/admin
 ```
 
 Everything works with SQLite by default. To use MongoDB, it must be installed and running on your computer. To run from a command line:
