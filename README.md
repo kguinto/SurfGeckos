@@ -23,11 +23,12 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+HEER can modify data in the admin portion, 127.0.0.1:8000/admin
+Add a contaminant and a set of action level values via the admin tab to test the software.
+
 To view the user dialogue, go to 127.0.0.1:8000/
 
-You can create a site with unrestricted use, drinking water, <150 from surface water and then print a pdf of the report from your browser.
-
-HEER can modify data in the admin portion, 127.0.0.1:8000/admin
+You can create a site report with the settings of your action level and then print a pdf of the report from your browser.
 
 Everything works with SQLite by default. To use MongoDB, it must be installed and running on your computer. To run from a command line:
 ```
