@@ -148,8 +148,14 @@ class SurferReport:
 		"""
 		self.db_name = db_name
 		self.mongo = mongo # boolean
+		self.db = self._db_connect('localhost', 27017)
 		self.record = self._create_record(input_data)
 
+	def _db_connect(self, mongohost, mongoport):
+		if self.mongo:
+			from pymongo import MongoClient
+			client = MongoClient(mongohost, mongoport)
+		
 	def to_db(self, mongohost, mongoport, database, collection_name):
 		"""
 		"""

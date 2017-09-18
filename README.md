@@ -8,6 +8,8 @@ From the command line within the project folder
 virtualenv env
 source env/bin/activate
 pip -r requirements.txt
+cd djangosite
+python manage.py runserver
 ```
 
 Everything works with SQLite by default. To use MongoDB, it must be installed and running on your computer. To run from a command line:
