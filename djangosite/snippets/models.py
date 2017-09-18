@@ -19,7 +19,6 @@ sw_distance_types = [
 # Create your models here.
 class Contaminant(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    direct_exposure = models.FloatField()
 
     def __str__(self):
         return str(self.name)
@@ -48,10 +47,10 @@ class ActionLevel(models.Model):
     terrestrial_ecotoxicity = models.FloatField(blank=True)
     soil_gross_contamination = models.FloatField(blank=True)
     leaching = models.FloatField(blank=True)
-    dw_toxicity = models.FloatField(blank=True)
-    gw_vapor_emissions = models.FloatField(blank=True)
+    dw_toxicity = models.FloatField(blank=True, verbose_name='Drinking Water Toxicity')
+    gw_vapor_emissions = models.FloatField(blank=True, verbose_name='Groundwater Vapor Emissions')
     aquatic_ecotoxicity = models.FloatField(blank=True)
-    gw_gross_contamination = models.FloatField(blank=True)
+    gw_gross_contamination = models.FloatField(blank=True, verbose_name='Groundwater Gross Contamination')
     shallow_soil_vapor = models.FloatField(blank=True)
     indoor_air = models.FloatField(blank=True)
 
