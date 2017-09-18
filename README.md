@@ -17,12 +17,11 @@ python manage.py migrate
 python manage.py loaddata db.json
 # start server
 python manage.py runserver
-# view user dialogue
-# Go to 127.0.0.1:8000/
-# Create a site with unrestricted use, drinking water, <150 from surface water
-# Can print a pdf of the report
-# HEER can modify data in the admin portion, 127.0.0.1:8000/admin
+
 ```
+To view the user dialogue, go to 127.0.0.1:8000/
+You can create a site with unrestricted use, drinking water, <150 from surface water and then print a pdf of the report from your browser.
+HEER can modify data in the admin portion, 127.0.0.1:8000/admin
 
 Everything works with SQLite by default. To use MongoDB, it must be installed and running on your computer. To run from a command line:
 ```
