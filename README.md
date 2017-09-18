@@ -1,7 +1,13 @@
 # SurfGeckos
 (U) Source code for HACC 2017 contributions to Department of Health soil inspections
 
-This project builds upon and improves upon the spreadsheet `EAL Surfer (HDOH Summer 2016rev Jan 2017).xlsx`, found here: (add link)
+The ultimate goal is to automate the risk assessment of land intended for development based on soil analsis. Current procedures are found here:
+
+ http://eha-web.doh.hawaii.gov/eha-cma/Leaders/HEER/environmental-hazard-evaluation-and-environmental-action-levels
+
+This project builds upon and improves upon the spreadsheet `EAL Surfer (HDOH Summer 2016rev Jan 2017).xlsx`, found here: http://eha-web.doh.hawaii.gov/eha-cma/documents/b4061863-2cd0-4880-8af3-f969d71aa27a
+
+
 
 From the command line within the project folder
 ```
@@ -9,6 +15,8 @@ virtualenv env
 source env/bin/activate
 pip -r requirements.txt
 cd djangosite
+python manage.py makemigrations
+python manage.py migrate
 python manage.py runserver
 ```
 
