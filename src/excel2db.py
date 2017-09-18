@@ -1,5 +1,9 @@
 """
-Currently creates a databse of many but not all tables. Currently fails on F-1, G1-4, H,J
+Currently creates a databse of many but not all tables. Currently fails on F-1, H,J
+
+H and J just need the schema filled in.
+
+F-1 is very different from the rest and may need a new function.
 
 From command line:
 python excel2db.py <excel file> 
@@ -69,6 +73,7 @@ D4f = ['contaminant', 'criteria', 'basis', 'hi_doh_wqs', 'usepa_nwqc']
 D5 = ['contaminant', 'agriculturual_water_goals']
 E= ['other', 'contaminant', 'extra', 'koc', 'koc_for_leaching', 'h', 'daf', 'saturation_limit', 'concentration_close_drinking', 'concentration_far_drinking',  'concentration_close_not_drinking', 'concentration_far_not_drinking', 'leaching_close_drinking', 'leaching_far_drinking',  'leaching_close_not_drinking', 'leaching_far_not_drinking',]
 F2=['contaminant', 'final_unrestricted_action_level', 'final_commerical_action_level', 'raw_unrestricted_action_level', 'raw_commercial_action_level', 'soil_saturation_limit', 'vp', 'ort_ugm3', 'ort_ppmv',  'odor_index']
+G1 = ['contaminant', 'eal', 'basis', 'solubility', 'taste_odor', 'odor_basis', 'upper_limit']
 I1 = ['contaminant', 'eal', 'basis', 'carcinogens', 'mutagens', 'noncarcinogens_final', 'noncarcinogens_hq', 'saturation']
 I2 = ['contaminant', 'eal', 'basis', 'carcinogens', 'noncarcinogens_final', 'noncarcinogens_hq', 'saturation']
 K = ['contaminant', 'range', 'upper_bound', 'background', 'action_level']
@@ -107,10 +112,10 @@ columns = {
 	38:[], # F-1
 	39:F2,
 	40:F2,
-	41:[], # G-1
-	42:[], # G-2
-	43:[], # G-3
-	44:[], # G-4
+	41:G1,
+	42:G1, # G-2
+	43:G1, # G-3
+	44:G1, # G-4
 	45:[], # H
 	46:I1,
 	47:I2,

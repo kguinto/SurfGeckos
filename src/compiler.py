@@ -150,7 +150,10 @@ def is_float(x):
 		return False
 
 def sqlite_lookup(value, db, table, field):
-	raise NotImplementedError("Only mongodb working at moment")
+	query_command = "SELECT {} FROM {} WHERE contaminant=?".format(field, table)
+	cursor = db.cursor()
+	cursor.execute(query_command, value)
+
 
 
 class SurferReport:
@@ -456,5 +459,5 @@ if __name__ == '__main__':
 		],
 	}
 	
-	report = SurferReport(input_data, db_name="surfer")
+	report = SurferReport(input_data, db_name="surfer", mongo=False)
 	print(json.dumps(report.record, indent=4))
