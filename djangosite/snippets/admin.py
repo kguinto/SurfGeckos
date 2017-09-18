@@ -3,7 +3,7 @@ from .models import Contaminant, SiteQuery, SiteContaminant, ActionLevel
 
 # Register your models here.
 class ContaminantAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'direct_exposure')
+    list_display = ('id', 'name')
     
 class SiteQueryAdmin(admin.ModelAdmin):
     list_display = ('id', 'address', 'name', 'site_id', 'land_use', 'groundwater_use', 'sw_distance')
