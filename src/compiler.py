@@ -115,6 +115,11 @@ report.record
 """
 
 import json
+import sys
+import logging
+
+logging_format = '%(asctime)s %(message)s'
+logging.basicConfig(format=logging_format, level=logging.DEBUG)
 
 help_ = """
 
@@ -123,18 +128,22 @@ We will work with mongodb by default.
 A record will correspond to a specific project and chemical.
 """
 
-def db_lookup(value, db_name, table, field, mongo=False):
-	return -1
+def db_lookup(value, db, table, field, mongo=False):
 	if mongo:
-		return mongo_lookup(value, db_name, table, field)
+		return mongo_lookup(value, db, table, field)
 	else:
-		sqlite_lookup(value, db_name, table, field)
+		sqlite_lookup(value, db, table, field)
 
-def mongo_lookup(value, db_name, collection, field):
-	pass
+def mongo_lookup(value, db, collection, field):
+	try:
+		result = next(db[collection].find({"contaminant":value}))
+	except StopIteration:
+		logging.info("Cannot find {} in {}".format(value, collection))
+		return -1
+	return result[field]
 
-def sqlite_lookup(value, db_name, table, field):
-	pass
+def sqlite_lookup(value, db, table, field):
+	raise NotImplementedError("Only mongodb working at moment")
 
 
 class SurferReport:
@@ -143,7 +152,7 @@ class SurferReport:
 	4. EAL Surfer - Surfer Report
 	"""
 	
-	def __init__(self, input_data, db_name, mongo=False):
+	def __init__(self, input_data, db_name, mongo=True):
 		"""
 		"""
 		self.db_name = db_name
@@ -155,11 +164,12 @@ class SurferReport:
 		if self.mongo:
 			from pymongo import MongoClient
 			client = MongoClient(mongohost, mongoport)
+
 			return client[self.db_name]
 			
 		else:
 			import sqlite3
-			return sqlite3.connect(db_name)
+			return sqlite3.connect(self.db_name)
 			
 	def to_db(self, mongohost, mongoport, database, collection_name):
 		"""
@@ -384,7 +394,7 @@ class SurferReport:
 		)
 
 	def _db(self, value, table, field):
-		return db_lookup(value, self.db_name, table, field, self.mongo)
+		return db_lookup(value, self.db, table, field, self.mongo)
 
 
 

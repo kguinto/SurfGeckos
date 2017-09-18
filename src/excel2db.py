@@ -51,7 +51,7 @@ A = ['contaminant', 'soil_far', 'groundwater_far', 'soil_close', 'groundwater_cl
 C = ['contaminant', 'state_A', 'state_B', 'indoor_residential', 'indoor_commerical', 'shallow_residential', 'shallow_commercial']
 D = ['contaminant', 'freshwater', 'marine', 'estuarine']
 A1 = ['contaminant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'background', 'direct_exposure', 'vapor_intrusion', 'drinking_water']
-C1a = ['extra', 'contaminant', 'state_A', 'state_B', 'unrestricted', 'commercial']
+C1a = ['contaminant', 'extra', 'state_A', 'state_B', 'unrestricted', 'commercial']
 C2 = ['contaminant', 'state_A', 'state_B', 'unrestricted_lowest', 'unrestricted_carcinogenic', 'unrestricted_noncarcinogenic', 'commercial_lowest', 'commercial_carcinogenic', 'commercial_noncarcinogenic']
 C3 =  ['contaminant', 'state_A', 'state_B', 'urf', 'rfc', 'unrestricted_lowest', 'unrestricted_carcinogenic', 'unrestricted_noncarcinogenic', 'commercial_lowest', 'commercial_carcinogenic', 'commercial_noncarcinogenic', 'odor_threshold']
 D1a = ['contaminant', 'eal', 'basis', 'gross_contamination', 'toxicity', 'vapor_intrusion', 'aquatic_impacts']
@@ -67,7 +67,7 @@ D4d = ['contaminant', 'freshwater_chronic', 'freshwater_acute', 'saltwater_chron
 D4e = ['contaminant', 'freshwater_usepa_chronic', 'freshwater_usepa_acute', 'freshwater_other_chronic', 'freshwater_chronic_basis', 'freshwater_other_acute', 'freshwater_other_basis',  'marine_usepa_chronic', 'marine_usepa_acute', 'marine_other_chronic', 'marine_chronic_basis', 'marine_other_acute', 'marine_other_basis'] 
 D4f = ['contaminant', 'criteria', 'basis', 'hi_doh_wqs', 'usepa_nwqc']
 D5 = ['contaminant', 'agriculturual_water_goals']
-E= ['extra', 'sorting', 'contaminant', 'koc', 'koc_for_leaching', 'h', 'daf', 'saturation_limit', 'concentration_close_drinking', 'concentration_far_drinking',  'concentration_close_not_drinking', 'concentration_far_not_drinking', 'leaching_close_drinking', 'leaching_far_drinking',  'leaching_close_not_drinking', 'leaching_far_not_drinking',]
+E= ['other', 'contaminant', 'extra', 'koc', 'koc_for_leaching', 'h', 'daf', 'saturation_limit', 'concentration_close_drinking', 'concentration_far_drinking',  'concentration_close_not_drinking', 'concentration_far_not_drinking', 'leaching_close_drinking', 'leaching_far_drinking',  'leaching_close_not_drinking', 'leaching_far_not_drinking',]
 
 
 columns = {
@@ -269,7 +269,7 @@ def mongo_load(df, db_name, collection_name,
 	client = MongoClient(mongohost, mongoport)
 	db = client[db_name]
 	collection = db[collection_name]
-	collection.insert_many(records)
+	collection.insert_many(records) # May create duplicate records
 
 	# To test
 	logging.debug(collection.find_one())
@@ -307,7 +307,7 @@ class Loader:
 		if sheets:
 			self.sheets = sheets
 		else:
-			self.sheets = list(range(9,37)) + []
+			self.sheets = list(range(9,52)) + []
 		self.db_name = db_name
 		workbook = openpyxl.load_workbook(workbook_file)
 		self.collections = get_sheetnames(workbook)
@@ -330,23 +330,19 @@ class Loader:
 								self.skipfooter[sheet]
 				)
 				logging.debug(df.head())
-			except TypeError:
-				logging.debug(columns[sheet])
-				logging.debug(sheet)
-				logging.debug(self.skiprows[sheet])
-				logging.debug(self.skipfooter[sheet])
-				sys.exit(1)
 			
-			if mongo: # Use mongodb
+				if mongo: # Use mongodb
 
-				mongo_load(df, self.db_name, self.collections[sheet])
+					mongo_load(df, self.db_name, self.collections[sheet])
 
-			else: # Use sqlite3
-				sqlite_load(df, self.db_name,
-							self.collections[sheet],
-							columns[sheet])			
-		
-		
+				else: # Use sqlite3
+					sqlite_load(df, self.db_name,
+								self.collections[sheet],
+		   						columns[sheet])			
+			except:
+				logging.debug("ERROR")
+	
+	
 
 if __name__ == '__main__':
 
