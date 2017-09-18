@@ -57,9 +57,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'bootstrap3',
+    'wkhtmltopdf',
     'snippets',
 ]
 
+# WKHTMLTOPDF_CMD = 'C:\\Program Files\\wktohtmlpdf\\bin'
+WKHTMLTOPDF_CMD_OPTIONS = {
+    'quiet': False,
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -139,3 +144,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = '/static/'
