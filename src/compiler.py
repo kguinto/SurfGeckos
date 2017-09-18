@@ -11,7 +11,7 @@ python compiler.py
 	input_data = {
 		"site_scenario":{
 			"land_use":"Unrestricted",
-			"groundwater_use":"Drinking Water Resource",
+			"groundwater_use":"dw", #not_dw
 			"sw_distance":"not_close", #close
 			"name":"My house",
 			"address":"123 Happy Place",
@@ -141,6 +141,13 @@ def mongo_lookup(value, db, collection, field):
 		logging.info("Cannot find {} in {}".format(value, collection))
 		return -1
 	return result[field]
+
+def is_float(x):
+	try:
+		float(x)
+		return True
+	except:
+		return False
 
 def sqlite_lookup(value, db, table, field):
 	raise NotImplementedError("Only mongodb working at moment")
@@ -289,7 +296,7 @@ class SurferReport:
 
 		"""
 		if key=='leaching':
-			return self._leaching_eal()
+			return self._leaching_eal(input_data, chemical_data)
 		tables = {
 			"vapor_emissions":'Table C-1b (Soil to IA)',
 			"ecotoxicity":'Table L (Soil Ecotoxicity)',
@@ -374,11 +381,35 @@ class SurferReport:
 		else:
 			return "-"
 
-	def _leaching_eal(self):
+	def _leaching_eal(self, input_data, chemical_data):
 		"""
 		placeholder
+IF(
+IF(E28="YES",
+   C52,
+   IF(E29="YES",
+      C53,
+      IF(E30="YES",
+          C54,
+          C55)))=0,"-",IF(E28="YES",C52,IF(E29="YES",C53,IF(E30="YES",C54,C55))))
 		"""
-		return -1
+		
+		fields = {
+			('close', 'dw'):'leaching_close_drinking',
+			('close', 'not_dw'):'leaching_close_not_drinking',
+			('not_close', 'dw'):'leaching_far_drinking',
+			('not_close', 'not_dw'): 'leaching_far_not_drinking',
+		}
+		table = "Table E Leaching"
+
+		result = self._db(chemical_data["contaminant"],
+						  table,
+						  fields[(input_data["site_scenario"]["sw_distance"],
+								  input_data["site_scenario"]["groundwater_use"])])
+		if result == 0:
+			return '-'
+		return result
+		
 
 	def _lowest_soil_eal(self, hazards, keys):
 		"""
@@ -387,8 +418,9 @@ class SurferReport:
 		"""
 		return min(
 			(
-				(key, hazards[key]["action_level"])
+				(key, float(hazards[key]["action_level"]))
 				for key in keys
+				if is_float(hazards[key]["action_level"])
 			),
 			key=lambda __:__[1]
 		)
@@ -402,7 +434,7 @@ if __name__ == '__main__':
 	input_data = {
 		"site_scenario":{
 			"land_use":"Unrestricted",
-			"groundwater_use":"Drinking Water Resource",
+			"groundwater_use":"dw", #not_dw
 			"sw_distance":"not_close", #close
 			"name":"My house",
 			"address":"123 Happy Place",
