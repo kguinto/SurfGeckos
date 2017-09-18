@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.forms import modelform_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template import RequestContext
 from django.urls import reverse
 from django.views.generic import ListView, DetailView
 from rest_framework import views, viewsets
+from wkhtmltopdf.views import PDFTemplateResponse
 from .models import Contaminant, SiteQuery, SiteContaminant
 from .serializers import ContaminantSerializer, SiteQuerySerializer
 
@@ -28,6 +30,16 @@ class SiteQueryDetail(DetailView):
     
 def index(request):
     return render(request, 'snippets/index.html')
+
+def sitequery_pdf(request, pk):
+    sitequery = SiteQuery.objects.get(pk=pk)
+    context = {'object': sitequery}
+    template = 'snippets/sitequery_pdf.html'
+
+    return PDFTemplateResponse(request=request,
+                               cmd_options={'disable-javascript':True}, 
+                               template=template, 
+                               context=context)
 
 def sitequery(request, sitequery_id):
     query = SiteQuery()
