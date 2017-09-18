@@ -6,6 +6,7 @@ This project builds upon and improves upon the spreadsheet `EAL Surfer (HDOH Sum
 From the command line within the project folder
 ```
 virtualenv env
+source env/bin/activate
 pip -r requirements.txt
 ```
 
