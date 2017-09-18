@@ -155,7 +155,12 @@ class SurferReport:
 		if self.mongo:
 			from pymongo import MongoClient
 			client = MongoClient(mongohost, mongoport)
-		
+			return client[self.db_name]
+			
+		else:
+			import sqlite3
+			return sqlite3.connect(db_name)
+			
 	def to_db(self, mongohost, mongoport, database, collection_name):
 		"""
 		"""
